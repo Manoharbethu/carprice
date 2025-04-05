@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Price Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        :root {
+            --primary-color: #3d5af1;
+            --secondary-color: #0e2979;
+            --accent-color: #ff6b6b;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+            --light-text: #f8f9fa;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --hover-shadow: 0 15px 35px rgba(61, 90, 241, 0.2);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7f0 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 40px 0;
+            color: var(--dark-text);
+        }
+
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .header-card {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 40px 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header-card::before {
+            content: '';
+            position: absolute;
+            right: -50px;
+            top: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header-card::after {
+            content: '';
+            position: absolute;
+            left: -50px;
+            bottom: -50px;
+            width: 150px;
+            height: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+        }
+
+        .header-card h1 {
+            font-weight: 700;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+        }
+
+        .header-card p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .form-card {
+            background-color: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: var(--hover-shadow);
+            transform: translateY(-5px);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            font-weight: 600;
+        }
+
+        .form-floating {
+            margin-bottom: 20px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 1rem;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(61, 90, 241, 0.25);
+        }
+
+        .form-label {
+            color: #555;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-group-text {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px 0 0 10px;
+        }
+
+        .input-group-append {
+            margin-left: 5px;
+        }
+
+        .input-group-append .btn {
+            border-radius: 8px;
+            padding: 8px 12px;
+            margin: 0 2px;
+            background-color: white;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            font-weight: bold;
+            transition: all 0.2s ease;
+        }
+
+        .input-group-append .btn:hover {
+            background-color: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .input-group-append .btn:active {
+            transform: translateY(0);
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            background-color: rgba(61, 90, 241, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+        }
+
+        .model-card {
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: white;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            cursor: pointer;
+        }
+
+        .model-card:hover {
+            border-color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .model-card.selected {
+            border-color: var(--primary-color);
+            background-color: rgba(61, 90, 241, 0.05);
+        }
+
+        .model-card h5 {
+            color: var(--dark-text);
+            margin-bottom: 10px;
+        }
+
+        .model-card p {
+            color: #666;
+            font-size: 0.85rem;
+            margin-bottom: 0;
+        }
+
+        .btn-predict {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 35px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            box-shadow: 0 5px 15px rgba(61, 90, 241, 0.4);
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            width: 100%;
+        }
+
+        .btn-predict:hover {
+            box-shadow: 0 8px 25px rgba(61, 90, 241, 0.5);
+            transform: translateY(-3px);
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        }
+
+        .btn-predict:active {
+            transform: translateY(1px);
+            box-shadow: 0 2px 8px rgba(61, 90, 241, 0.4);
+        }
+
+        .model-feature {
+            margin-bottom: 10px;
+        }
+
+        .range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 5px;
+        }
+
+        .range-labels span {
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        .car-animation {
+            position: absolute;
+            top: 50%;
+            right: 30px;
+            transform: translateY(-50%);
+            font-size: 3rem;
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tooltip styling */
+        .tooltip-icon {
+            cursor: pointer;
+            color: var(--primary-color);
+            margin-left: 5px;
+            font-size: 0.85rem;
+        }
+
+        /* Animations */
+        @keyframes float {
+            0% {
+                transform: translateY(0px) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+        }
+
+        .float-animation {
+            animation: float 4s ease-in-out infinite;
+        }
+
+        /* Custom radio style */
+        .custom-radio {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .radio-container {
+            position: relative;
+            padding-left: 0;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <div class="header-card animate__animated animate__fadeIn">
+            <div class="car-animation float-animation">
+                <i class="fas fa-car"></i>
+            </div>
+            <h1 class="animate__animated animate__fadeInUp">Car Price Prediction</h1>
+            <p class="animate__animated animate__fadeInUp animate__delay-1s">Get accurate price estimates based on advanced machine learning models</p>
+        </div>
+
+        <form action="/predict" method="post" id="prediction-form">
+            <div class="form-card animate__animated animate__fadeInUp animate__delay-1s">
+                <h3 class="section-title"><i class="fas fa-car-side me-2"></i>Vehicle Information</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="brand" class="form-label">Brand</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tag"></i></span>
+                                <select class="form-select" id="brand" name="brand" required>
+                                    <option value="">Select Brand</option>
+                                    {% for brand in brands %}
+                                    <option value="{{ brand }}">{{ brand }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="car_model" class="form-label">Car Model</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-car"></i></span>
+                                <select class="form-select" id="car_model" name="car_model" required>
+                                    <option value="">Select Model</option>
+                                    {% for model in car_models %}
+                                    <option value="{{ model }}">{{ model }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="model_year" class="form-label">Model Year</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                                <input type="number" class="form-control" id="model_year" name="model_year" min="1990" max="2025" value="2020" required>
+                            </div>
+                            <div class="range-labels">
+                                <span>1990</span>
+                                <span>2025</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="kilometers_run" class="form-label">Kilometers Run</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-tachometer-alt"></i></span>
+                                <input type="number" class="form-control" id="kilometers_run" name="kilometers_run" min="0" value="50000" required>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card animate__animated animate__fadeInUp animate__delay-2s">
+                <h3 class="section-title"><i class="fas fa-cogs me-2"></i>Technical Specifications</h3>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="engine_capacity" class="form-label">Engine Capacity (cc)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-engine"></i></span>
+                                <input type="text" class="form-control" id="engine_capacity" name="engine_capacity" placeholder="e.g. 1500cc" required>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="transmission" class="form-label">Transmission</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-cog"></i></span>
+                                <select class="form-select" id="transmission" name="transmission" required>
+                                    <option value="">Select Transmission</option>
+                                    {% for transmission in transmissions %}
+                                    <option value="{{ transmission }}">{{ transmission }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="body_type" class="form-label">Body Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-truck-monster"></i></span>
+                                <select class="form-select" id="body_type" name="body_type" required>
+                                    <option value="">Select Body Type</option>
+                                    {% for body_type in body_types %}
+                                    <option value="{{ body_type }}">{{ body_type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="fuel_type" class="form-label">Fuel Type</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-gas-pump"></i></span>
+                                <select class="form-select" id="fuel_type" name="fuel_type" required>
+                                    <option value="">Select Fuel Type</option>
+                                    {% for fuel_type in fuel_types %}
+                                    <option value="{{ fuel_type }}">{{ fuel_type }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-card animate__animated animate__fadeInUp animate__delay-3s">
+                <h3 class="section-title"><i class="fas fa-brain me-2"></i>Select Prediction Model</h3>
+                <p class="text-muted mb-4">Choose the AI model that best fits your needs</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <label class="radio-container">
+                            <div class="model-card selected" id="ensemble-card">
+                                <div class="d-flex align-items-center">
+                                    <input type="radio" name="model" id="ensemble" value="ensemble" class="custom-radio" checked>
+                                    <div>
+                                        <h5><i class="fas fa-layer-group me-2"></i>Ensemble</h5>
+                                        <p>Average of all models for balanced prediction</p>
+                                        <div class="model-feature">
+                                            <small><i class="fas fa-check-circle text-success me-1"></i> Highest accuracy</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="radio-container">
+                            <div class="model-card" id="cnn_rnn-card">
+                                <div class="d-flex align-items-center">
+                                    <input type="radio" name="model" id="cnn_rnn" value="cnn_rnn" class="custom-radio">
+                                    <div>
+                                        <h5><i class="fas fa-network-wired me-2"></i>CNN+RNN Model</h5>
+                                        <p>Deep learning hybrid for pattern recognition</p>
+                                        <div class="model-feature">
+                                            <small><i class="fas fa-check-circle text-success me-1"></i> Good for newer vehicles</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <label class="radio-container">
+                            <div class="model-card" id="lstm_rf-card">
+                                <div class="d-flex align-items-center">
+                                    <input type="radio" name="model" id="lstm_rf" value="lstm_rf" class="custom-radio">
+                                    <div>
+                                        <h5><i class="fas fa-chart-line me-2"></i>LSTM+RF</h5>
+                                        <p>Time-series focus with random forest</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="radio-container">
+                            <div class="model-card" id="cnn_rf-card">
+                                <div class="d-flex align-items-center">
+                                    <input type="radio" name="model" id="cnn_rf" value="cnn_rf" class="custom-radio">
+                                    <div>
+                                        <h5><i class="fas fa-project-diagram me-2"></i>CNN+RF</h5>
+                                        <p>Visual pattern with decision trees</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="radio-container">
+                            <div class="model-card" id="rnn_rf-card">
+                                <div class="d-flex align-items-center">
+                                    <input type="radio" name="model" id="rnn_rf" value="rnn_rf" class="custom-radio">
+                                    <div>
+                                        <h5><i class="fas fa-sitemap me-2"></i>RNN+RF</h5>
+                                        <p>Sequential with random forest</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-predict animate__animated animate__pulse animate__infinite">
+                    <i class="fas fa-calculator me-2"></i> Calculate Price Estimate
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            // Add loading animation to the button when form is submitted
+            $('#prediction-form').on('submit', function() {
+                $('.btn-predict').html('<i class="fas fa-spinner fa-spin me-2"></i> Calculating...');
+                $('.btn-predict').attr('disabled', true);
+                $('.btn-predict').removeClass('animate__pulse animate__infinite');
+                $('.btn-predict').addClass('animate__animated animate__fadeIn');
+            });
+
+            // Update car models when brand changes
+            $('#brand').change(function() {
+                var brand = $(this).val();
+                if (brand) {
+                    // Add loading animation
+                    $('#car_model').html('<option>Loading models...</option>');
+
+                    $.getJSON('/get_car_models/' + brand, function(data) {
+                        var options = '<option value="">Select Model</option>';
+                        $.each(data, function(index, value) {
+                            options += '<option value="' + value + '">' + value + '</option>';
+                        });
+                        $('#car_model').html(options);
+
+                        // Add fade effect when options are loaded
+                        $('#car_model').addClass('animate__animated animate__fadeIn');
+                        setTimeout(function() {
+                            $('#car_model').removeClass('animate__animated animate__fadeIn');
+                        }, 1000);
+                    });
+                } else {
+                    $('#car_model').html('<option value="">Select Model</option>');
+                }
+            });
+
+            // Model card selection
+            $('.model-card').click(function() {
+                $('.model-card').removeClass('selected');
+                $(this).addClass('selected');
+
+                // Find the radio inside this card and select it
+                $(this).find('input[type="radio"]').prop('checked', true);
+            });
+
+            // Animate elements as they scroll into view
+            const animateOnScroll = function() {
+                const elements = document.querySelectorAll('.form-card');
+
+                elements.forEach(element => {
+                    const elementPosition = element.getBoundingClientRect().top;
+                    const windowHeight = window.innerHeight;
+
+                    if (elementPosition < windowHeight - 100) {
+                        element.classList.add('animate__fadeInUp');
+                    }
+                });
+            };
+
+            // Listen for scroll events
+            window.addEventListener('scroll', animateOnScroll);
+
+            // Tooltip initialization
+            const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+
+            // Add auto-increment/decrement buttons to number inputs
+            $('.input-group input[type="number"]').each(function() {
+                $(this).after('<div class="input-group-append d-flex">' +
+                              '<button class="btn btn-outline-secondary increment" type="button">+</button>' +
+                              '<button class="btn btn-outline-secondary decrement" type="button">-</button>' +
+                              '</div>');
+            });
+
+            // Handle increment button click
+            $(document).on('click', '.increment', function() {
+                var input = $(this).closest('.input-group').find('input[type="number"]');
+                var currentValue = parseInt(input.val());
+                var max = input.attr('max');
+                if (!max || currentValue < parseInt(max)) {
+                    input.val(currentValue + 1).trigger('change');
+                }
+            });
+
+            // Handle decrement button click
+            $(document).on('click', '.decrement', function() {
+                var input = $(this).closest('.input-group').find('input[type="number"]');
+                var currentValue = parseInt(input.val());
+                var min = input.attr('min');
+                if (!min || currentValue > parseInt(min)) {
+                    input.val(currentValue - 1).trigger('change');
+                }
+            });
+
+            // Make model year input slider
+            $('#model_year').on('input', function() {
+                $(this).next('.model-year-value').text($(this).val());
+            });
+
+            // Highlight fields on focus
+            $('.form-control, .form-select').on('focus', function() {
+                $(this).closest('.mb-3').css('transition', 'all 0.3s');
+                $(this).closest('.mb-3').css('transform', 'translateX(5px)');
+            });
+
+            $('.form-control, .form-select').on('blur', function() {
+                $(this).closest('.mb-3').css('transform', 'translateX(0)');
+            });
+        });
+    </script>
+</body>
+</html>
